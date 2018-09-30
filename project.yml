@@ -106,6 +106,8 @@ targets:
       # - target: Domain
       # - target: Infrastructure
       - carthage: Cartography
+      - carthage: RxSwift
+      - carthage: RxCocoa
   ExCameraTests:
     type: bundle.unit-test
     platform: iOS
