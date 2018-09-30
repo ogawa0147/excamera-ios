@@ -1,0 +1,76 @@
+fastlane_require 'dotenv'
+
+before_all do
+  Dotenv.overload '.env'
+end
+
+default_platform(:ios)
+
+platform :ios do
+
+  before_all do
+    sh "touch ../ExCamera/R.generated.swift"
+    sh "brew install xcodegen"
+    sh "xcodegen --spec ../project.yml --project ../"
+    cocoapods(repo_update: true)
+    carthage(platform: "ios", cache_builds: true)
+  end
+
+  lane :bootstrap do
+  end
+
+  desc "Submit a new Beta Build to Apple TestFlight"
+  desc "This will also make sure the profile is up to date"
+  lane :beta do
+    TARGETS = JSON.parse(`xcodebuild -list -json -project ../ExCamera.xcodeproj`)['project']['targets']
+
+    TARGETS.each do |target|
+      backup_file(path: "./#{target}/Info.plist")
+    end
+
+    increment_build_number
+
+    build_app(export_method: "ad-hoc")
+
+    crashlytics(
+      crashlytics_path: "./Pods/Crashlytics/iOS/Crashlytics.framework",
+      api_token: ENV['CRASHLYTICS_API_TOKEN'],
+      build_secret: ENV['CRASHLYTICS_BUILD_SECRET'],
+      notes: "",
+      ipa_path: "./ExCamera.ipa"
+    )
+
+    upload_symbols_to_crashlytics
+
+    clean_build_artifacts
+
+    TARGETS.each do |target|
+      restore_file(path: "./#{target}/Info.plist")
+    end
+  end
+
+  desc "Deploy a new version to the App Store"
+  lane :release do
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    scan
+  end
+
+  after_all do |lane|
+  end
+
+  error do |lane, exception|
+  end
+
+  private_lane :replace_fabric_api_key_from_info_plist do
+    update_info_plist(
+      plist_path: "./ExCamera/Info.plist",
+      block: proc do |plist|
+        plist["Fabric"]["APIKey"] = ENV['CRASHLYTICS_API_TOKEN']
+      end
+    )
+  end
+
+end

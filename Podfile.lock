@@ -1,0 +1,38 @@
+PODS:
+  - Crashlytics (3.10.8):
+    - Fabric (~> 1.7.12)
+  - Fabric (1.7.12)
+  - LicensePlist (1.8.8)
+  - R.swift (5.0.0.alpha.2):
+    - R.swift.Library (~> 5.0.0.alpha.2)
+  - R.swift.Library (5.0.0.alpha.2)
+  - SwiftLint (0.27.0)
+
+DEPENDENCIES:
+  - Crashlytics
+  - Fabric
+  - LicensePlist
+  - R.swift (~> 5.0.0.alpha.2)
+  - R.swift.Library (~> 5.0.0.alpha.2)
+  - SwiftLint
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Crashlytics
+    - Fabric
+    - LicensePlist
+    - R.swift
+    - R.swift.Library
+    - SwiftLint
+
+SPEC CHECKSUMS:
+  Crashlytics: 058dc1ba579f6c100bc60a6878703779bff383c4
+  Fabric: d7387db9a31aadff63b147a4b91d982c53afaa4f
+  LicensePlist: c30d20e39985de8600cccda21096cfa98865483b
+  R.swift: 31fa1bd537fa81307815cc622122f33331f32174
+  R.swift.Library: 3c21b823839bf5a6769dc7f96cb44479dab51b1b
+  SwiftLint: 3207c1faa2240bf8973b191820a116113cd11073
+
+PODFILE CHECKSUM: a6e8c341818f822e297a76d4a9c1d90c848945ad
+
+COCOAPODS: 1.5.3

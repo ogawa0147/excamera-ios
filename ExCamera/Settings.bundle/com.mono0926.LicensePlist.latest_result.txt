@@ -1,0 +1,31 @@
+name: Crashlytics, nameSpecified: 
+body: Fabric: Copyright 20…
+version: 3.10.8
+
+name: Fabric, nameSpecified: 
+body: Fabric: Copyright 20…
+version: 1.7.12
+
+name: LicensePlist, nameSpecified: 
+body: MIT License
+
+Copyrig…
+version: 1.8.8
+
+name: R.swift, nameSpecified: 
+body: The MIT License (MIT…
+version: 
+
+name: R.swift.Library, nameSpecified: 
+body: The MIT License (MIT…
+version: 
+
+name: SwiftLint, nameSpecified: 
+body: The MIT License (MIT…
+version: 0.27.0
+
+name: Cartography, nameSpecified: , owner: robb, version: 3.0.2
+
+add-version-numbers: false
+
+LicensePlist Version: 1.8.3

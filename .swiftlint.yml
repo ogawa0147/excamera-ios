@@ -1,0 +1,20 @@
+included:
+  - ExCamera
+  - ExCameraTests
+excluded:
+  - Carthage
+  - Pods
+  - ExCamera/R.generated.swift
+disabled_rules:
+  - line_length
+
+variable_name:
+  excluded:
+    - id
+    - x
+    - y
+    - a
+    - b
+    - aa
+    - bb
+    - rr

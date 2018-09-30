@@ -1,0 +1,40 @@
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# xcodeproj
+*.xcodeproj/*
+
+# others
+*.swp
+!.gitkeep
+.DS_Store
+
+# CocoaPods
+Pods/*
+
+# Carthage
+Carthage/*
+
+# fastlane
+vendor/*
+fastlane/report.xml
+
+# ENV
+.env
+
+# R.generated.swift
+R.generated.swift
