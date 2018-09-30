@@ -1,6 +1,9 @@
 import UIKit
+import RxSwift
+import RxCocoa
+import RxDataSources
 
-final class TopPageDataSource: NSObject, UITableViewDataSource {
+final class TopPageDataSource: NSObject, UITableViewDataSource, RxTableViewDataSourceType {
     typealias Element = [TopPageViewModel.Section]
     var items: Element = []
 
@@ -19,5 +22,13 @@ final class TopPageDataSource: NSObject, UITableViewDataSource {
         cell.titleLabel.text = items[indexPath.section].title
         cell.accessoryType =  items[indexPath.section].elements[indexPath.row].accessoryType
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, observedEvent: Event<Element>) {
+        guard case .next(let newItems) = observedEvent else {
+            return
+        }
+        items = newItems
+        tableView.reloadData()
     }
 }
