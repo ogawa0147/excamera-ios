@@ -24,7 +24,11 @@ name: SwiftLint, nameSpecified:
 body: The MIT License (MIT…
 version: 0.27.0
 
-name: Cartography, nameSpecified: , owner: robb, version: 3.0.2
+name: Cartography, nameSpecified: , owner: robb, version: 3.1.0
+
+name: RxDataSources, nameSpecified: , owner: RxSwiftCommunity, version: 3.1.0
+
+name: RxSwift, nameSpecified: , owner: ReactiveX, version: 4.3.1
 
 add-version-numbers: false
 

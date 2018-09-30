@@ -44,6 +44,8 @@ targets:
         script: ${SRCROOT}/Pods/R.swift/rswift generate ${SRCROOT}/ExCamera
     dependencies:
       - carthage: Cartography
+      - carthage: RxSwift
+      - carthage: RxCocoa
   ExCameraTests:
     type: bundle.unit-test
     platform: iOS
