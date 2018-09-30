@@ -1,9 +1,12 @@
 import UIKit
 import AVFoundation
+import RxSwift
 import Cartography
 
 class CameraGifViewController: UIViewController {
     var viewModel: CameraGifViewModel!
+
+    private let disposeBag = DisposeBag()
 
     private let dataSource: CameraGifDataSource = CameraGifDataSource()
 
@@ -86,11 +89,9 @@ class CameraGifViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: inOutCameraButton),
                                               UIBarButtonItem(customView: unsetSelectedItemButton)]
-        view.addSubview(captureView)
-        view.addSubview(progressBar)
-        view.addSubview(countTimer)
-        view.addSubview(recordingButton)
-        view.addSubview(collectionView)
+        addSubview()
+        configureCollectionView()
+        bindViewModel()
 
         mp4Handler.configureSession()
         mp4Handler.captureOutputHandler = { (captureOutput, sampleBuffer) in
@@ -104,12 +105,6 @@ class CameraGifViewController: UIViewController {
             }
             self.mp4Writer.captureOutput(captureOutput: captureOutput, sampleBuffer: sampleBuffer, pixelBuffer: uiImage.pixelBuffer)
         }
-
-        dataSource.items = viewModel.gifs
-
-        collectionView.dataSource = dataSource
-        collectionView.delegate = self
-        collectionView.reloadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -158,6 +153,37 @@ class CameraGifViewController: UIViewController {
         }
         recordingButton.layer.cornerRadius = min(recordingButton.frame.width, recordingButton.frame.height) * 0.5
         recordingButton.layer.masksToBounds = true
+    }
+
+    private func addSubview() {
+        view.addSubview(captureView)
+        view.addSubview(progressBar)
+        view.addSubview(countTimer)
+        view.addSubview(recordingButton)
+        view.addSubview(collectionView)
+    }
+
+    private func configureCollectionView() {
+        collectionView.dataSource = dataSource
+        collectionView.delegate = self
+        collectionView.reloadData()
+    }
+
+    private func bindViewModel() {
+        let input = CameraGifViewModel.Input(
+            disposeBag: disposeBag,
+            refreshTrigger: rx.viewWillAppear.take(1).asDriver(onErrorDriveWith: .empty())
+//            itemSelected: collectionView.rx.itemSelected.asDriver())
+        )
+        let output = viewModel.transform(input: input)
+        output.gifs
+            .drive(collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        output.audios
+            .drive(onNext: { authorized in
+                if authorized {}
+            })
+            .disposed(by: disposeBag)
     }
 }
 

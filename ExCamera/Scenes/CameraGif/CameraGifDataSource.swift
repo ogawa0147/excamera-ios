@@ -1,6 +1,9 @@
 import UIKit
+import RxSwift
+import RxCocoa
+import RxDataSources
 
-final class CameraGifDataSource: NSObject, UICollectionViewDataSource {
+final class CameraGifDataSource: NSObject, UICollectionViewDataSource, RxCollectionViewDataSourceType {
     typealias Element = [GifImageSource]
     var items: Element = []
 
@@ -18,5 +21,11 @@ final class CameraGifDataSource: NSObject, UICollectionViewDataSource {
         }
         cell.bind(items[indexPath.row])
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, observedEvent: Event<Element>) {
+        guard case .next(let newItems) = observedEvent else { return }
+        items = newItems
+        collectionView.reloadData()
     }
 }
