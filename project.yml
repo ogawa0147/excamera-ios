@@ -1,23 +1,79 @@
 name: ExCamera
 configs:
   Debug: debug
-  AdHoc: release
+  Release: release
 options:
-  developmentLanguage: ja
-  defaultConfig: Debug
+  defaultConfig: Release
+  deploymentTarget: [iOS]
+  developmentLanguage: English
   minimumXcodeGenVersion: 1.11.2
-  xcodeVersion: 10.0
+  xcodeVersion: 1000
+attributes: {
+  ORGANIZATIONNAME: '',
+}
 settings:
-  IPHONEOS_DEPLOYMENT_TARGET: 11.0
-  SDKROOT: iphoneos
-  CODE_SIGN_IDENTITY: iPhone Developer
-  SWIFT_VERSION: 4.2
-  OTHER_SWIFT_FLAGS: '-Xfrontend -debug-time-function-bodies'
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: 10.0
+    SWIFT_VERSION: 4.2
+  configs:
+    Debug:
+      ENABLE_TESTABILITY: YES
+      GCC_PREPROCESSOR_DEFINITIONS: DEBUG=1
+      MTL_ENABLE_DEBUG_INFO: YES
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+      VALIDATE_PRODUCT: NO
+    Release:
+      ENABLE_TESTABILITY: NO
+      MTL_ENABLE_DEBUG_INFO: NO
+      VALIDATE_PRODUCT: YES
+schemes:
+  Development:
+    build:
+      targets:
+        ExCamera: all
+    run:
+      commandLineArguments:
+        "-FIRAnalyticsDebugEnabled": true
+      environmentVariables:
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: false
+    test:
+      config: Debug
+      targets: [ExCameraTests]
+    profile:
+      config: Debug
+    archive:
+      config: Debug
+  Production:
+    build:
+      targets:
+        ExCamera: all
+    run:
+      config: Release
+      commandLineArguments:
+        "-noFIRAnalyticsDebugEnabled": true
+      environmentVariables:
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: false
+    test:
+      config: Release
+      targets: [ExCameraTests]
+    profile:
+      config: Release
+    analyze:
+      config: Release
+    archive:
+      config: Release
 targets:
   ExCamera:
     type: application
     platform: iOS
     sources: ExCamera
+    # configFiles:
+    #   Debug: ExCamera/Configs/Debug.xcconfig
+    #   Release: ExCamera/Configs/Release.xcconfig
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
@@ -32,17 +88,23 @@ targets:
           CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Developer
           PROVISIONING_PROFILE_SPECIFIER: match Development me.example.camera
           DEBUG_INFORMATION_FORMAT: dwarf
-        AdHoc:
+        Release:
           CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Distribution
-          PROVISIONING_PROFILE_SPECIFIER: match AdHoc me.example.camera
+          PROVISIONING_PROFILE_SPECIFIER: match Release me.example.camera
     prebuildScripts:
       - name: Run LicensePlist
         script: ${SRCROOT}/Pods/LicensePlist/license-plist --output-path ${PRODUCT_NAME}/Settings.bundle
       - name: Run SwiftLint
         script: ${SRCROOT}/Pods/SwiftLint/swiftlint
       - name: Run R.swift
-        script: ${SRCROOT}/Pods/R.swift/rswift generate ${SRCROOT}/ExCamera
+        script: $SRCROOT/Pods/R.swift/rswift generate $SRCROOT/ExCamera/R.generated.swift
+        inputFiles:
+          - $TEMP_DIR/rswift-lastrun
+        outputFiles:
+          - $SRCROOT/ExCamera/R.generated.swift
     dependencies:
+      # - target: Domain
+      # - target: Infrastructure
       - carthage: Cartography
   ExCameraTests:
     type: bundle.unit-test

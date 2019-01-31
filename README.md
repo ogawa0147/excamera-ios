@@ -1,9 +1,52 @@
 # ExCamera
 
-### `xcodeproj`を生成して開発環境を用意する
+## Requirements
+
+* iOS `~> 10.0`
+* Xcode `10.1`
+* [Homebrew](https://brew.sh) `~> 1.8.0`
+* [Bundle](https://bundler.io) `~> 1.16.5`
+* [CocoaPods](https://github.com/CocoaPods/CocoaPods) `~> 1.5.3`
+* [Carthage](https://github.com/Carthage/Carthage) `~> 0.31.1`
+* [XcodeGen](https://github.com/yonaskolb/XcodeGen) `~> 1.11.2`
+
+## Installation
+
+### Homebrew
 
 ```
-$ bundle install
+$ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+### Bundle
+
+```
+$ gem install bundler
+```
+
+### CocoaPods
+
+```
+$ gem install cocoapods
+```
+
+### Carthage
+
+```
+$ brew install carthage
+```
+
+### XcodeGen
+
+```
+$ brew install xcodegen
+```
+
+## Start development 
+
+```
+$ carthage bootstrap --platform ios --cache-builds
+$ bundle install --path .bundle
 $ bundle exec fastlane bootstrap
 ```
 

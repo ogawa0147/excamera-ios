@@ -1,10 +1,12 @@
 included:
   - ExCamera
   - ExCameraTests
+
 excluded:
   - Carthage
   - Pods
   - ExCamera/R.generated.swift
+
 disabled_rules:
   - line_length
 

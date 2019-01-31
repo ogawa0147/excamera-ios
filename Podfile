@@ -7,9 +7,8 @@ target 'ExCamera' do
 
   # Pods for ExCamera
   pod 'LicensePlist'
-  pod 'SwiftLint'
-  pod 'R.swift', '~> 5.0.0.alpha.2'
-  pod 'R.swift.Library', '~> 5.0.0.alpha.2'
+  pod 'SwiftLint', '~> 0.27.0'
+  pod 'R.swift', '~> 5.0.0'
   pod 'Fabric'
   pod 'Crashlytics'
 
