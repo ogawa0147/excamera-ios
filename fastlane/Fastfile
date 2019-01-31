@@ -9,18 +9,22 @@ default_platform(:ios)
 platform :ios do
 
   before_all do
-    sh "touch ../ExCamera/R.generated.swift"
-    sh "brew install xcodegen"
-    sh "xcodegen --spec ../project.yml --project ../"
-    cocoapods(repo_update: true)
-    carthage(platform: "ios", cache_builds: true)
   end
 
+  after_all do |lane|
+  end
+
+  error do |lane, exception|
+  end
+
+  # e.g) bundle exec fastlane ios bootstrap
+  desc "Execute commands necessary for development"
   lane :bootstrap do
+    setup_project
   end
 
-  desc "Submit a new Beta Build to Apple TestFlight"
-  desc "This will also make sure the profile is up to date"
+  # e.g) bundle exec fastlane ios beta
+  desc "Submit a new Beta Build to Fabric"
   lane :beta do
     TARGETS = JSON.parse(`xcodebuild -list -json -project ../ExCamera.xcodeproj`)['project']['targets']
 
@@ -49,19 +53,34 @@ platform :ios do
     end
   end
 
+  # e.g) bundle exec fastlane ios release
   desc "Deploy a new version to the App Store"
   lane :release do
   end
 
+  # e.g) bundle exec fastlane ios test
   desc "Runs all the tests"
   lane :test do
     scan
   end
 
-  after_all do |lane|
+  # e.g) bundle exec fastlane ios certs
+  desc "Execute certificates issuance"
+  lane :certs do
+    match(app_identifier: "me.example.camera", type: "development", force_for_new_devices: true)
+    match(app_identifier: "me.example.camera", type: "appstore", force_for_new_devices: true)
   end
 
-  error do |lane, exception|
+  private_lane :setup_project do
+    sh 'cd .. && touch ExCamera/R.generated.swift'
+    sh 'cd .. && xcodegen'
+    cocoapods
+    carthage(
+      command: 'build',
+      platform: 'ios',
+      cache_builds: true,
+      use_binaries: false
+    )
   end
 
   private_lane :replace_fabric_api_key_from_info_plist do
