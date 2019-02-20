@@ -1,8 +1,21 @@
 import UIKit
 import AVFoundation
+import DIKit
+import Utility
 
-class PlayerViewController: UIViewController {
-    var viewModel: PlayerViewModel!
+final class PlayerViewController: UIViewController, FactoryMethodInjectable {
+    struct Dependency {
+        let resolver: AppResolver
+        let viewModel: PlayerViewModel
+    }
+
+    static func makeInstance(dependency: Dependency) -> PlayerViewController {
+        let viewController = StoryboardScene.PlayerViewController.playerViewController.instantiate()
+        viewController.dependency = dependency
+        return viewController
+    }
+
+    private var dependency: Dependency!
 
     private var player: AVPlayer?
     private var playerLayer: AVPlayerLayer?
@@ -13,7 +26,7 @@ class PlayerViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.lightGray
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_cancel()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconCancel.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -27,7 +40,7 @@ class PlayerViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_share()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconShare.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.2
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -65,7 +78,7 @@ extension PlayerViewController {
         dismiss(animated: true, completion: nil)
     }
     @objc func showShareModal() {
-        let activity = UIActivityViewController(activityItems: [viewModel.url], applicationActivities: nil)
+        let activity = UIActivityViewController(activityItems: [dependency.viewModel.url], applicationActivities: nil)
         activity.excludedActivityTypes = [.print, .copyToPasteboard, .assignToContact, .airDrop]
         activity.completionWithItemsHandler = { (_, _, _, _) in
             self.dismiss(animated: true, completion: nil)
@@ -82,7 +95,7 @@ extension PlayerViewController {
 
 extension PlayerViewController {
     private func configureVideoPlayer() {
-        let asset = AVURLAsset(url: viewModel.url)
+        let asset = AVURLAsset(url: dependency.viewModel.url)
         let playerItem = AVPlayerItem(asset: asset)
         let player = AVPlayer(playerItem: playerItem)
         player.actionAtItemEnd = .none

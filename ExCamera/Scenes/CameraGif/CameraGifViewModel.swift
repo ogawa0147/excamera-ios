@@ -1,19 +1,25 @@
 import Foundation
+import DIKit
 
-final class CameraGifViewModel {
-    private let navigator: CameraGifNavigator
+final class CameraGifViewModel: Injectable {
+    struct Dependency {
+        let navigator: CameraGifNavigator
+    }
+
+    private let dependency: Dependency
+
     let gifs: [GifImageSource]
     let audios: [AudioSource]
 
-    init(navigator: CameraGifNavigator) {
+    init(dependency: Dependency) {
         let gifs = GifImageRepository().elements.map { GifImageSource(cgImages: $0.cgImages, delays: $0.delays, duration: $0.duration, defaultFrame: $0.defaultFrame, data: $0.data, animation: $0.animation, overlay: $0.overlay, scene: $0.scene) }
         let audios = AudioRepository().elements.map { AudioSource(data: $0.data, fileURL: $0.fileURL) }
-        self.navigator = navigator
+        self.dependency = dependency
         self.gifs = gifs
         self.audios = audios
     }
 
     func toPlayer(url: URL, animated: Bool = true) {
-        navigator.toPlayer(url: url, animated: animated)
+        dependency.navigator.toPlayer(url: url, animated: animated)
     }
 }

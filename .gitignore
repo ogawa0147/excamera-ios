@@ -68,10 +68,13 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 # Bundle
-.bundle
+.bundle/
 
 # XcodeGen
 *.xcodeproj/*
 
-# R.generated.swift
-R.generated.swift
+# SwiftGen
+ExCamera/Generated/*.swift
+
+# DIKitGen
+ExCamera/AppResolver.generated.swift

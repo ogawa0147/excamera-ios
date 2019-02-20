@@ -1,0 +1,56 @@
+---
+format_version: '6'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+workflows:
+  ci:
+    steps:
+    - certificate-and-profile-installer: {}
+    - cache-pull: {}
+    - script:
+        title: Bootstrap
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            bundle install --path .bundle
+            brew bundle
+            mint bootstrap
+    - carthage:
+        title: Carthage Bootstrap
+        inputs:
+        - carthage_command: bootstrap
+        - carthage_options: "--no-use-binaries --cache-builds --platform ios"
+    - cache-push:
+        run_if: ".IsCI"
+        inputs:
+        - cache_paths: |-
+            $BITRISE_CACHE_DIR
+    - fastlane:
+        title: Run Test
+        inputs:
+        - lane: ios test
+    - script:
+        title: Run Danger
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            bundle exec danger
+  beta:
+    steps:
+    - certificate-and-profile-installer: {}
+  deploy:
+    steps:
+    - certificate-and-profile-installer: {}
+app:
+  envs:
+  - DANGER_FILE_PATH: "./Dangerfile"
+  - BITRISE_CACHE_DIR: "./Carthage -> ./Carthage/Cachefile"

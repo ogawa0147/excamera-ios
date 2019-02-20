@@ -1,11 +1,15 @@
 included:
   - ExCamera
   - ExCameraTests
+  - Utility
+  - UtilityTests
 
 excluded:
   - Carthage
   - Pods
+  - .bundle
   - ExCamera/R.generated.swift
+  - ExCamera/AppResolver.generated.swift
 
 disabled_rules:
   - line_length
@@ -15,8 +19,3 @@ variable_name:
     - id
     - x
     - y
-    - a
-    - b
-    - aa
-    - bb
-    - rr

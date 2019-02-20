@@ -1,9 +1,22 @@
 import UIKit
 import ARKit
 import Cartography
+import DIKit
+import Utility
 
-class ARCameraViewController: UIViewController {
-    var viewModel: ARCameraViewModel!
+final class ARCameraViewController: UIViewController, FactoryMethodInjectable {
+    struct Dependency {
+        let resolver: AppResolver
+        let viewModel: ARCameraViewModel
+    }
+
+    static func makeInstance(dependency: Dependency) -> ARCameraViewController {
+        let viewController = StoryboardScene.ARCameraViewController.arCameraViewController.instantiate()
+        viewController.dependency = dependency
+        return viewController
+    }
+
+    private var dependency: Dependency!
 
     private let dataSource: ARCameraDataSource = ARCameraDataSource()
 
@@ -36,7 +49,7 @@ class ARCameraViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.lightGray
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_trash()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconTrash.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -50,7 +63,7 @@ class ARCameraViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_keyboard()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconKeyboard.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -83,7 +96,7 @@ class ARCameraViewController: UIViewController {
         view.addSubview(collectionView)
         view.addSubview(textField)
 
-        dataSource.items = viewModel.sections
+        dataSource.items = dependency.viewModel.sections
 
         collectionView.dataSource = dataSource
         collectionView.delegate = self

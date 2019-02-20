@@ -1,8 +1,8 @@
 import Foundation
 import AVFoundation
 
-extension CMSampleBuffer {
-    var pixelBuffer: CVPixelBuffer? {
+public extension CMSampleBuffer {
+    public var pixelBuffer: CVPixelBuffer? {
         guard let imageBuffer = CMSampleBufferGetImageBuffer(self) else {
             return nil
         }

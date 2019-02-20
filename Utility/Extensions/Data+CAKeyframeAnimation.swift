@@ -1,7 +1,7 @@
 import UIKit
 
-extension Data {
-    var animation: CAKeyframeAnimation {
+public extension Data {
+    public var animation: CAKeyframeAnimation {
         guard let imageSource = CGImageSourceCreateWithData(self as CFData, nil) else {
             fatalError()
         }

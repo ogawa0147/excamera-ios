@@ -1,9 +1,22 @@
 import UIKit
 import AVFoundation
 import Cartography
+import DIKit
+import Utility
 
-class CameraVisionViewController: UIViewController {
-    var viewModel: CameraVisionViewModel!
+final class CameraVisionViewController: UIViewController, FactoryMethodInjectable {
+    struct Dependency {
+        let resolver: AppResolver
+        let viewModel: CameraVisionViewModel
+    }
+
+    static func makeInstance(dependency: Dependency) -> CameraVisionViewController {
+        let viewController = StoryboardScene.CameraVisionViewController.cameraVisionViewController.instantiate()
+        viewController.dependency = dependency
+        return viewController
+    }
+
+    private var dependency: Dependency!
 
     private let mp4Handler: MP4Handler = MP4Handler()
 
@@ -21,7 +34,7 @@ class CameraVisionViewController: UIViewController {
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
-        button.setTitle(R.string.localizable.recordingButtonTitle(), for: .normal)
+        button.setTitle(L10n.recordingButtonTitle, for: .normal)
         button.addTarget(self, action: #selector(type(of: self).doRecording), for: .touchUpInside)
         return button
     }()
@@ -31,7 +44,7 @@ class CameraVisionViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_inout_camera()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconInoutCamera.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -45,7 +58,7 @@ class CameraVisionViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.lightGray
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_trash()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconTrash.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -71,7 +84,7 @@ class CameraVisionViewController: UIViewController {
         view.addSubview(countTimer)
         view.addSubview(recordingButton)
 
-        selectedItem = viewModel.visions.first
+        selectedItem = dependency.viewModel.visions.first
 
         mp4Handler.configureSession()
         mp4Handler.captureOutputHandler = { (captureOutput, sampleBuffer) in
@@ -155,7 +168,7 @@ extension CameraVisionViewController {
 
 extension CameraVisionViewController {
     private func recordVideo() {
-        let audioURL: URL = viewModel.audios[0].fileURL
+        let audioURL: URL = dependency.viewModel.audios[0].fileURL
         let videoOutputSize: CGSize = captureView.frame.size
         progressBar.animate()
         mp4Writer.startRecording(audioURL: audioURL, videoOutputSize: videoOutputSize) { (exportURL, videoURL) in
@@ -172,7 +185,7 @@ extension CameraVisionViewController {
                 sourceType: self.selectedItem
             ) { [weak self] _, url in
                 DispatchQueue.main.async {
-                    self?.viewModel.toPlayer(url: url, animated: false)
+                    self?.dependency.viewModel.toPlayer(url: url, animated: false)
                     self?.selectedItem = nil
                 }
             }

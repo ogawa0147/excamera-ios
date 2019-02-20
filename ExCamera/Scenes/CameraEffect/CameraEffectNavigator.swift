@@ -1,11 +1,30 @@
 import UIKit
+import DIKit
 
-protocol CameraEffectNavigator: PlayerPresentable {}
+protocol CameraEffectNavigator {
+    func toMain()
+    func toPlayer(url: URL, animated: Bool)
+}
 
-class DefaultCameraEffectNavigator: CameraEffectNavigator {
-    internal let navigationController: UINavigationController
+final class CameraEffectNavigatorImpl: CameraEffectNavigator, Injectable {
+    struct Dependency: NavigatorType {
+        let resolver: AppResolver
+        let navigationController: UINavigationController
+    }
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    private let dependency: Dependency
+
+    init(dependency: Dependency) {
+        self.dependency = dependency
+    }
+
+    func toMain() {
+        let viewController = dependency.resolver.resolveCameraEffectViewController(navigator: self)
+        dependency.navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func toPlayer(url: URL, animated: Bool) {
+        let navigator = dependency.resolver.resolvePlayerNavigatorImpl(navigationController: dependency.navigationController)
+        navigator.toMain(url: url, animated: true)
     }
 }

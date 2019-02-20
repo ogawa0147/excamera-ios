@@ -36,9 +36,9 @@ Deploy a new version to the App Store
 fastlane ios test
 ```
 Runs all the tests
-### ios certs
+### ios certificates
 ```
-fastlane ios certs
+fastlane ios certificates
 ```
 Execute certificates issuance
 

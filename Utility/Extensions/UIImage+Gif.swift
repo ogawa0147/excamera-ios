@@ -2,7 +2,7 @@ import UIKit
 import ImageIO
 
 // from https://github.com/swiftgif/SwiftGif/blob/master/SwiftGifCommon/UIImage%2BGif.swift
-extension UIImageView {
+public extension UIImageView {
     public func loadGif(name: String) {
         DispatchQueue.global().async {
             let image = UIImage.gif(name: name)
@@ -20,7 +20,7 @@ extension UIImageView {
         }
     }
 }
-extension UIImage {
+public extension UIImage {
     public class func gif(data: Data) -> UIImage? {
         // Create source from data
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
@@ -63,7 +63,7 @@ extension UIImage {
         }
         return gif(data: dataAsset.data)
     }
-    internal class func delayForImageAtIndex(_ index: Int, source: CGImageSource!) -> Double {
+    class func delayForImageAtIndex(_ index: Int, source: CGImageSource!) -> Double {
         var delay = 0.1
         // Get dictionaries
         let cfProperties = CGImageSourceCopyPropertiesAtIndex(source, index, nil)
@@ -83,7 +83,7 @@ extension UIImage {
         }
         return delay
     }
-    internal class func gcdForPair(_ x: Int?, _ y: Int?) -> Int {
+    class func gcdForPair(_ x: Int?, _ y: Int?) -> Int {
         var x = x
         var y = y
         // Check if one of them is nil
@@ -115,7 +115,7 @@ extension UIImage {
             }
         }
     }
-    internal class func gcdForArray(_ array: [Int]) -> Int {
+    class func gcdForArray(_ array: [Int]) -> Int {
         if array.isEmpty {
             return 1
         }
@@ -125,7 +125,7 @@ extension UIImage {
         }
         return gcd
     }
-    internal class func animatedImageWithSource(_ source: CGImageSource) -> UIImage? {
+    class func animatedImageWithSource(_ source: CGImageSource) -> UIImage? {
         let count = CGImageSourceGetCount(source)
         var images = [CGImage]()
         var delays = [Int]()
