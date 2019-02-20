@@ -61,7 +61,15 @@ platform :ios do
   # e.g) bundle exec fastlane ios test
   desc "Runs all the tests"
   lane :test do
-    scan
+    setup_project
+    opts = {
+      :scheme => 'Development',
+      :workspace => 'ExCamera.xcworkspace',
+      :configuration => 'Debug',
+      :formatter => 'xcpretty-json-formatter',
+      :clean => true
+    }
+    run_tests(opts)
   end
 
   # e.g) bundle exec fastlane ios certs
