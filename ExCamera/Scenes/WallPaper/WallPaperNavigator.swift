@@ -1,21 +1,30 @@
 import UIKit
+import DIKit
 
-protocol WallPaperNavigator: NavigatorType {
+protocol WallPaperNavigator {
+    func toMain()
     func toPlayer(url: URL, animated: Bool)
 }
 
-class DefaultWallPaperNavigator: WallPaperNavigator {
-    internal let navigationController: UINavigationController
+final class WallPaperNavigatorImpl: WallPaperNavigator, Injectable {
+    struct Dependency: NavigatorType {
+        let resolver: AppResolver
+        let navigationController: UINavigationController
+    }
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    private let dependency: Dependency
+
+    init(dependency: Dependency) {
+        self.dependency = dependency
+    }
+
+    func toMain() {
+        let viewController = dependency.resolver.resolveWallPaperViewController(navigator: self)
+        dependency.navigationController.pushViewController(viewController, animated: true)
     }
 
     func toPlayer(url: URL, animated: Bool) {
-        let viewController = R.storyboard.playerViewController.playerViewController()!
-        let navigationController = UINavigationController(rootViewController: viewController)
-        let navigator = DefaultPlayerNavigator(navigationController: navigationController)
-        viewController.viewModel = PlayerViewModel(navigator: navigator, url: url)
-        self.navigationController.present(navigationController, animated: animated, completion: nil)
+        let navigator = dependency.resolver.resolvePlayerNavigatorImpl(navigationController: dependency.navigationController)
+        navigator.toMain(url: url, animated: true)
     }
 }

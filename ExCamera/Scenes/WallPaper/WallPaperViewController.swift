@@ -3,9 +3,22 @@ import AVFoundation
 import Photos
 import MobileCoreServices
 import Cartography
+import DIKit
+import Utility
 
-class WallPaperViewController: UIViewController {
-    var viewModel: WallPaperViewModel!
+final class WallPaperViewController: UIViewController, FactoryMethodInjectable {
+    struct Dependency {
+        let resolver: AppResolver
+        let viewModel: WallPaperViewModel
+    }
+
+    static func makeInstance(dependency: Dependency) -> WallPaperViewController {
+        let viewController = StoryboardScene.WallPaperViewController.wallPaperViewController.instantiate()
+        viewController.dependency = dependency
+        return viewController
+    }
+
+    private var dependency: Dependency!
 
     private let dataSource: WallPaperDataSource = WallPaperDataSource()
 
@@ -29,7 +42,7 @@ class WallPaperViewController: UIViewController {
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
-        button.setTitle(R.string.localizable.creatingButtonTitle(), for: .normal)
+        button.setTitle(L10n.creatingButtonTitle, for: .normal)
         button.addTarget(self, action: #selector(type(of: self).doCreating), for: .touchUpInside)
         return button
     }()
@@ -57,12 +70,12 @@ class WallPaperViewController: UIViewController {
 
         livePhotoHandler.configureSession()
 
-        if let source = viewModel.gifs.first {
+        if let source = dependency.viewModel.gifs.first {
             captureView.image = UIImage.gif(data: source.data)
             selectedImageSource = source
         }
 
-        dataSource.items = viewModel.gifs
+        dataSource.items = dependency.viewModel.gifs
 
         collectionView.dataSource = dataSource
         collectionView.delegate = self

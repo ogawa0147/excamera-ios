@@ -1,11 +1,24 @@
 import UIKit
+import DIKit
 
-protocol ARCameraNavigator: NavigatorType {}
+protocol ARCameraNavigator {
+    func toMain()
+}
 
-class DefaultARCameraNavigator: ARCameraNavigator {
-    internal let navigationController: UINavigationController
+final class ARCameraNavigatorImpl: ARCameraNavigator, Injectable {
+    struct Dependency: NavigatorType {
+        let resolver: AppResolver
+        let navigationController: UINavigationController
+    }
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    private let dependency: Dependency
+
+    init(dependency: Dependency) {
+        self.dependency = dependency
+    }
+
+    func toMain() {
+        let viewController = dependency.resolver.resolveARCameraViewController(navigator: self)
+        dependency.navigationController.pushViewController(viewController, animated: true)
     }
 }

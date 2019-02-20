@@ -1,8 +1,14 @@
 import UIKit
 import Photos
+import DIKit
 
-final class TopPageViewModel {
-    private let navigator: TopPageNavigator
+final class TopPageViewModel: Injectable {
+    struct Dependency {
+        let navigator: TopPageNavigator
+    }
+
+    private let dependency: Dependency
+
     let sections: [Section]
 
     struct Section {
@@ -18,16 +24,16 @@ final class TopPageViewModel {
         }
     }
 
-    init(navigator: TopPageNavigator) {
+    init(dependency: Dependency) {
         let sections = [
-            Section(title: R.string.localizable.gifCameraTitle(), elements: [Element(action: navigator.toCameraGif)]),
-            Section(title: R.string.localizable.effectCameraTitle(), elements: [Element(action: navigator.toCameraEffect)]),
-            Section(title: R.string.localizable.filterCameraTitle(), elements: [Element(action: navigator.toCameraFilter)]),
-            Section(title: R.string.localizable.visionCameraTitle(), elements: [Element(action: navigator.toCameraVision)]),
-            Section(title: R.string.localizable.arCameraTitle(), elements: [Element(action: navigator.toARCamera)]),
-            Section(title: R.string.localizable.wallPaperTitle(), elements: [Element(action: navigator.toWallPaper)])
+            Section(title: L10n.gifCameraTitle, elements: [Element(action: dependency.navigator.toCameraGif)]),
+            Section(title: L10n.effectCameraTitle, elements: [Element(action: dependency.navigator.toCameraEffect)]),
+            Section(title: L10n.filterCameraTitle, elements: [Element(action: dependency.navigator.toCameraFilter)]),
+            Section(title: L10n.visionCameraTitle, elements: [Element(action: dependency.navigator.toCameraVision)]),
+            Section(title: L10n.arCameraTitle, elements: [Element(action: dependency.navigator.toARCamera)]),
+            Section(title: L10n.wallPaperTitle, elements: [Element(action: dependency.navigator.toWallPaper)])
         ]
-        self.navigator = navigator
+        self.dependency = dependency
         self.sections = sections
     }
 

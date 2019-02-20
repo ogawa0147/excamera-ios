@@ -5,13 +5,14 @@ import Crashlytics
 final class Application {
 
     static let shared = Application()
+    private let appResolver = AppResolverImpl()
 
     private init() {}
 
     func configureMainInterface(in window: UIWindow) {
         let navigationController = UINavigationController()
-        let navigator = DefaultTopPageNavigator(navigationController: navigationController)
-        navigator.toTopPage()
+        let navigator = appResolver.resolveTopPageNavigatorImpl(navigationController: navigationController)
+        navigator.toMain()
         UIView.transition(with: window, duration: 0.2, options: [], animations: {
             window.rootViewController = navigationController
             window.makeKeyAndVisible()

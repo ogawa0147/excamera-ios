@@ -1,7 +1,7 @@
 import UIKit
 
-extension UIImage {
-    var pixelBuffer: CVPixelBuffer? {
+public extension UIImage {
+    public var pixelBuffer: CVPixelBuffer? {
         let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
         var pixelBuffer: CVPixelBuffer?
         let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(size.width), Int(size.height), kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)

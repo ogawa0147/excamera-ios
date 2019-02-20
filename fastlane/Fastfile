@@ -66,14 +66,20 @@ platform :ios do
 
   # e.g) bundle exec fastlane ios certs
   desc "Execute certificates issuance"
-  lane :certs do
+  lane :certificates do
     match(app_identifier: "me.example.camera", type: "development", force_for_new_devices: true)
     match(app_identifier: "me.example.camera", type: "appstore", force_for_new_devices: true)
   end
 
-  private_lane :setup_project do
-    sh 'cd .. && touch ExCamera/R.generated.swift'
+  def setup_project
+    # Mintfile を使った場合、パッケージのリンクを行ってくれないので dikitgen がそのまま使えない
+    # Mintfile で $ mint bootstrap が済んだ場合は実際にもう一回インストールを行わず、リンクだけを行う
+    # project.yml の prebuildScripts でビルドスクリプトを記述している
+    sh 'cd .. && which dikitgen >/dev/null || mint install ishkawa/DIKit dikitgen && dikitgen ExCamera --exclude Carthage > ExCamera/AppResolver.generated.swift'
+
+    sh 'cd .. && swiftgen'
     sh 'cd .. && xcodegen'
+
     cocoapods
     carthage(
       command: 'build',
@@ -83,7 +89,7 @@ platform :ios do
     )
   end
 
-  private_lane :replace_fabric_api_key_from_info_plist do
+  def replace_fabric_api_key_from_info_plist
     update_info_plist(
       plist_path: "./ExCamera/Info.plist",
       block: proc do |plist|

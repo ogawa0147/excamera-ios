@@ -1,9 +1,22 @@
 import UIKit
 import AVFoundation
 import Cartography
+import DIKit
+import Utility
 
-class CameraFilterViewController: UIViewController {
-    var viewModel: CameraFilterViewModel!
+final class CameraFilterViewController: UIViewController, FactoryMethodInjectable {
+    struct Dependency {
+        let resolver: AppResolver
+        let viewModel: CameraFilterViewModel
+    }
+
+    static func makeInstance(dependency: Dependency) -> CameraFilterViewController {
+        let viewController = StoryboardScene.CameraFilterViewController.cameraFilterViewController.instantiate()
+        viewController.dependency = dependency
+        return viewController
+    }
+
+    private var dependency: Dependency!
 
     private let dataSource: CameraFilterDataSource = CameraFilterDataSource()
 
@@ -27,7 +40,7 @@ class CameraFilterViewController: UIViewController {
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
-        button.setTitle(R.string.localizable.recordingButtonTitle(), for: .normal)
+        button.setTitle(L10n.recordingButtonTitle, for: .normal)
         button.addTarget(self, action: #selector(type(of: self).doRecording), for: .touchUpInside)
         return button
     }()
@@ -37,7 +50,7 @@ class CameraFilterViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.themeColor()
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_inout_camera()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconInoutCamera.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -51,7 +64,7 @@ class CameraFilterViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = UIColor.lightGray
         button.imageEdgeInsets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-        button.setImage(R.image.icon_trash()?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.iconTrash.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.layer.cornerRadius = min(button.frame.width, button.frame.height) * 0.3
         button.layer.masksToBounds = true
         button.widthAnchor.constraint(equalToConstant: button.frame.size.width).isActive = true
@@ -108,7 +121,7 @@ class CameraFilterViewController: UIViewController {
             self.mp4Writer.captureOutput(captureOutput: captureOutput, sampleBuffer: sampleBuffer, pixelBuffer: uiImage.pixelBuffer)
         }
 
-        dataSource.items = viewModel.filters
+        dataSource.items = dependency.viewModel.filters
 
         collectionView.dataSource = dataSource
         collectionView.delegate = self
@@ -190,9 +203,9 @@ extension CameraFilterViewController {
 
 extension CameraFilterViewController {
     private func recordVideo() {
-        var audioURL: URL = viewModel.audios[0].fileURL
-        if let indexPath = selectedItem?.indexPath, viewModel.audios.indices.contains(indexPath.row) {
-            audioURL = viewModel.audios[indexPath.row].fileURL
+        var audioURL: URL = dependency.viewModel.audios[0].fileURL
+        if let indexPath = selectedItem?.indexPath, dependency.viewModel.audios.indices.contains(indexPath.row) {
+            audioURL = dependency.viewModel.audios[indexPath.row].fileURL
         }
         let videoOutputSize: CGSize = captureView.frame.size
         progressBar.animate()
@@ -210,7 +223,7 @@ extension CameraFilterViewController {
                 sourceType: self.selectedItem?.source
             ) { [weak self] _, url in
                 DispatchQueue.main.async {
-                    self?.viewModel.toPlayer(url: url, animated: false)
+                    self?.dependency.viewModel.toPlayer(url: url, animated: false)
                     self?.selectedItem = nil
                 }
             }

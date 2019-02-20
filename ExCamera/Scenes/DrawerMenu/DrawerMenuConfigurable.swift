@@ -6,7 +6,7 @@ protocol DrawerMenuConfigurable: NavigatorType {
 
 extension DrawerMenuConfigurable {
     func configureDrawerMenu(viewController: DrawerMenuShowable) {
-        let drawerMenuController = R.storyboard.drawerMenuViewController.drawerMenuViewController()!
+        let drawerMenuController = StoryboardScene.DrawerMenuViewController.drawerMenuViewController.instantiate()
         viewController.drawerMenuController = drawerMenuController
         viewController.addChildViewController(drawerMenuController)
         viewController.view.addSubview(drawerMenuController.view)

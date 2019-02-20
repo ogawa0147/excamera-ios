@@ -1,6 +1,6 @@
 import UIKit
 
-extension CGImagePropertyOrientation {
+public extension CGImagePropertyOrientation {
     init(_ orientation: UIImage.Orientation) {
         switch orientation {
         case .up:

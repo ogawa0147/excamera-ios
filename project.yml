@@ -5,15 +5,14 @@ configs:
 options:
   defaultConfig: Release
   deploymentTarget: [iOS]
-  developmentLanguage: English
-  minimumXcodeGenVersion: 1.11.2
+  developmentLanguage: en
   xcodeVersion: 1000
 attributes: {
   ORGANIZATIONNAME: '',
 }
 settings:
   base:
-    IPHONEOS_DEPLOYMENT_TARGET: 10.0
+    IPHONEOS_DEPLOYMENT_TARGET: 11.0
     SWIFT_VERSION: 4.2
   configs:
     Debug:
@@ -71,41 +70,52 @@ targets:
     type: application
     platform: iOS
     sources: ExCamera
-    # configFiles:
-    #   Debug: ExCamera/Configs/Debug.xcconfig
-    #   Release: ExCamera/Configs/Release.xcconfig
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
-        CODE_SIGN_STYLE: Manual
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        INFOPLIST_FILE: ExCamera/info.plist
-        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
-        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_STYLE: Automatic
+        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+        INFOPLIST_FILE: ExCamera/info.plist
+        PRODUCT_NAME: $(TARGET_NAME)
       configs:
         Debug:
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
           CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Developer
+          DISPLAY_NAME: Camera
+          PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
           PROVISIONING_PROFILE_SPECIFIER: match Development me.example.camera
-          DEBUG_INFORMATION_FORMAT: dwarf
         Release:
+          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
           CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Distribution
-          PROVISIONING_PROFILE_SPECIFIER: match Release me.example.camera
+          DISPLAY_NAME: Camera
+          PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
+          PROVISIONING_PROFILE_SPECIFIER: match AppStore me.example.camera
     prebuildScripts:
       - name: Run LicensePlist
-        script: ${SRCROOT}/Pods/LicensePlist/license-plist --output-path ${PRODUCT_NAME}/Settings.bundle
+        script: ${SRCROOT}/Pods/LicensePlist/license-plist --output-path ExCamera/Settings.bundle
       - name: Run SwiftLint
-        script: ${SRCROOT}/Pods/SwiftLint/swiftlint
-      - name: Run R.swift
-        script: $SRCROOT/Pods/R.swift/rswift generate $SRCROOT/ExCamera/R.generated.swift
-        inputFiles:
-          - $TEMP_DIR/rswift-lastrun
-        outputFiles:
-          - $SRCROOT/ExCamera/R.generated.swift
+        script: swiftlint
+      - name: Run SwiftGen
+        script: swiftgen
+      - name: Run DIKitGen
+        script: dikitgen ${SRCROOT}/ExCamera --exclude Carthage > ${SRCROOT}/ExCamera/AppResolver.generated.swift
     dependencies:
-      # - target: Domain
-      # - target: Infrastructure
+      - target: Utility
       - carthage: Cartography
+      - carthage: DIKit
+  Utility:
+    type: framework
+    platform: iOS
+    sources: Utility
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: me.example.camera.utility
+      INFOPLIST_FILE: Utility/info.plist
+    scheme:
+      testTargets:
+        - UtilityTests
+    dependencies:
+      - carthage: XCGLogger
+      - carthage: ObjcExceptionBridging
   ExCameraTests:
     type: bundle.unit-test
     platform: iOS
@@ -113,4 +123,15 @@ targets:
     settings:
       INFOPLIST_FILE: ExCameraTests/info.plist
       CODE_SIGN_STYLE: Automatic
-      TEST_HOST: ${BUILT_PRODUCTS_DIR}/ExCameraTests.app
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ExCamera.app/ExCamera
+  UtilityTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: UtilityTests
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: me.example.camera.utility-tests
+      INFOPLIST_FILE: UtilityTests/Info.plist
+      CODE_SIGN_STYLE: Automatic
+      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ExCamera.app/ExCamera
+    dependencies:
+      - target: Utility
