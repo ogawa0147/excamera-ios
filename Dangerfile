@@ -35,9 +35,9 @@ is_from_develop = github.branch_for_head == "develop"
 is_from_release = !!github.branch_for_head.match(/release-[0-9]+\.[0-9]+\.[0-9]/)
 
 # merge
-if is_to_master && !is_from_release
-  fail 'master branch へ merge 出来るのは release branch のみです。'
-end
+#if is_to_master && !is_from_release
+#  fail 'master branch へ merge 出来るのは release branch のみです。'
+#end
 
 # --------------------
 # pr assignee

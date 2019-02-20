@@ -8,7 +8,6 @@ excluded:
   - Carthage
   - Pods
   - .bundle
-  - ExCamera/R.generated.swift
   - ExCamera/AppResolver.generated.swift
 
 disabled_rules:
