@@ -14,6 +14,8 @@ final class Application {
         #else
         Constants.shared.setEnviroment(.production)
         #endif
+
+        Constants.shared.configureLogger()
     }
 
     func configureMainInterface(in window: UIWindow) {
