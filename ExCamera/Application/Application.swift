@@ -1,13 +1,22 @@
 import UIKit
 import Fabric
 import Crashlytics
+import Utility
 
 final class Application {
 
     static let shared = Application()
     private let appResolver = AppResolverImpl()
 
-    private init() {}
+    private init() {
+        #if DEBUG
+        Constants.shared.setEnviroment(.development)
+        #else
+        Constants.shared.setEnviroment(.production)
+        #endif
+
+        Constants.shared.configureLogger()
+    }
 
     func configureMainInterface(in window: UIWindow) {
         let navigationController = UINavigationController()
