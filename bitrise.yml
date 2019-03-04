@@ -2,7 +2,7 @@
 format_version: '6'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 workflows:
-  ci:
+  _run_from_repo:
     steps:
     - certificate-and-profile-installer: {}
     - cache-pull: {}
@@ -44,12 +44,15 @@ workflows:
             set -x
 
             bundle exec danger
+  ci:
+    after_run:
+    - _run_from_repo
   beta:
-    steps:
-    - certificate-and-profile-installer: {}
+    after_run:
+    - _run_from_repo
   deploy:
-    steps:
-    - certificate-and-profile-installer: {}
+    after_run:
+    - _run_from_repo
 app:
   envs:
   - DANGER_FILE_PATH: "./Dangerfile"
