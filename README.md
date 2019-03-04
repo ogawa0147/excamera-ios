@@ -1,21 +1,28 @@
-# ExCamera
+# excamera-ios
 
-## Requirements
+## 環境について
 
 * iOS `~> 10.0`
 * Xcode `10.1`
 * [Homebrew](https://brew.sh) `~> 1.8.0`
 * [Bundle](https://bundler.io) `~> 1.16.5`
+* [Mint](https://github.com/yonaskolb/Mint) `~> 0.11.3`
 * [CocoaPods](https://github.com/CocoaPods/CocoaPods) `~> 1.5.3`
 * [Carthage](https://github.com/Carthage/Carthage) `~> 0.31.1`
 * [XcodeGen](https://github.com/yonaskolb/XcodeGen) `~> 1.11.2`
 
-## Installation
+### 環境の構築
 
-### Homebrew
+#### Homebrew
 
 ```
 $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+### Homebrew/bundle
+
+```
+$ brew tap Homebrew/bundle
 ```
 
 ### Bundle
@@ -24,28 +31,12 @@ $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/inst
 $ gem install bundler
 ```
 
-### CocoaPods
+### 環境構築手順
 
 ```
-$ gem install cocoapods
-```
-
-### Carthage
-
-```
-$ brew install carthage
-```
-
-### XcodeGen
-
-```
-$ brew install xcodegen
-```
-
-## Start development 
-
-```
-$ carthage bootstrap --platform ios --cache-builds
+$ brew bundle
+$ mint bootstrap
+$ carthage update --platform ios --cache-builds
 $ bundle install --path .bundle
 $ bundle exec fastlane bootstrap
 ```
