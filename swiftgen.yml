@@ -1,15 +1,19 @@
 ib:
-  inputs: ExCamera/Scenes/
+  inputs:
+    - Camera/Scenes/
   outputs:
     - templateName: scenes-swift4
-      output: ExCamera/Generated/StoryboardScenes.swift
+      output: Camera/Generated/StoryboardScenes.swift
 xcassets:
-  inputs: ExCamera/Resources/Assets.xcassets
+  inputs:
+    - Camera/Resources/Assets.xcassets
+    - Camera/Resources/Colors.xcassets
   outputs:
     - templateName: swift4
-      output: ExCamera/Generated/Assets.swift
+      output: Camera/Generated/Assets.swift
 strings:
-  inputs: ExCamera/Resources/Localizable.strings
+  inputs:
+    - Camera/Resources/Localizable/Base.lproj/Localizable.strings
   outputs:
     - templateName: structured-swift4
-      output: ExCamera/Generated/Localizable.swift
+      output: Camera/Generated/Localizable.swift

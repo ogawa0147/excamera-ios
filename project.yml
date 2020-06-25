@@ -1,4 +1,4 @@
-name: ExCamera
+name: Camera
 configs:
   Debug: debug
   Release: release
@@ -6,40 +6,32 @@ options:
   defaultConfig: Release
   deploymentTarget: [iOS]
   developmentLanguage: en
-  xcodeVersion: 1000
+  xcodeVersion: 11.0
+  transitivelyLinkDependencies: true
+  groupSortPosition: bottom
+  minimumXcodeGenVersion: 2.15.1
 attributes: {
-  ORGANIZATIONNAME: '',
 }
-settings:
-  base:
-    IPHONEOS_DEPLOYMENT_TARGET: 11.0
-    SWIFT_VERSION: 4.2
-  configs:
-    Debug:
-      ENABLE_TESTABILITY: YES
-      GCC_PREPROCESSOR_DEFINITIONS: DEBUG=1
-      MTL_ENABLE_DEBUG_INFO: YES
-      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
-      VALIDATE_PRODUCT: NO
-    Release:
-      ENABLE_TESTABILITY: NO
-      MTL_ENABLE_DEBUG_INFO: NO
-      VALIDATE_PRODUCT: YES
+configFiles:
+  Debug: Configs/Development.xcconfig
+  Release: Configs/Production.xcconfig
 schemes:
   Development:
     build:
       targets:
-        ExCamera: all
+        Camera: all
     run:
+      config: Debug
       commandLineArguments:
         "-FIRAnalyticsDebugEnabled": true
       environmentVariables:
         - variable: OS_ACTIVITY_MODE
           value: disable
-          isEnabled: false
+          isEnabled: true
     test:
       config: Debug
-      targets: [ExCameraTests]
+      targets:
+        - name: CameraTests
     profile:
       config: Debug
     archive:
@@ -47,7 +39,7 @@ schemes:
   Production:
     build:
       targets:
-        ExCamera: all
+        Camera: all
     run:
       config: Release
       commandLineArguments:
@@ -58,7 +50,8 @@ schemes:
           isEnabled: false
     test:
       config: Release
-      targets: [ExCameraTests]
+      targets:
+        - name: CameraTests
     profile:
       config: Release
     analyze:
@@ -66,72 +59,67 @@ schemes:
     archive:
       config: Release
 targets:
-  ExCamera:
+  Camera:
     type: application
     platform: iOS
-    sources: ExCamera
-    settings:
-      base:
-        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: $(inherited)
-        CODE_SIGN_STYLE: Automatic
-        DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
-        INFOPLIST_FILE: ExCamera/info.plist
-        PRODUCT_NAME: $(TARGET_NAME)
-      configs:
-        Debug:
-          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-          CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Developer
-          DISPLAY_NAME: Camera
-          PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
-          PROVISIONING_PROFILE_SPECIFIER: match Development me.example.camera
-        Release:
-          ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-          CODE_SIGN_IDENTITY[sdk=iphoneos*]: iPhone Distribution
-          DISPLAY_NAME: Camera
-          PRODUCT_BUNDLE_IDENTIFIER: me.example.camera
-          PROVISIONING_PROFILE_SPECIFIER: match AppStore me.example.camera
+    sources:
+      - Camera
+    configFiles:
+      Debug: Configs/App-Development.xcconfig
+      Release: Configs/App-Production.xcconfig
+    dependencies:
+      - target: Environments
+      - target: Logger
+      - carthage: DIKit
+      - carthage: Cartography
     prebuildScripts:
       - name: Run LicensePlist
-        script: ${SRCROOT}/Pods/LicensePlist/license-plist --output-path ExCamera/Settings.bundle
+        script: |
+          ${SRCROOT}/Pods/LicensePlist/license-plist --output-path Camera/Settings.bundle --config-path license_plist.yml --single-page
       - name: Run SwiftLint
-        script: swiftlint
+        script: |
+          if which swiftlint >/dev/null; then
+            swiftlint --no-cache
+          fi
       - name: Run SwiftGen
-        script: swiftgen
+        script: |
+          if which swiftgen >/dev/null; then
+            swiftgen
+          fi
       - name: Run DIKitGen
-        script: dikitgen ${SRCROOT}/ExCamera --exclude Carthage > ${SRCROOT}/ExCamera/AppResolver.generated.swift
-    dependencies:
-      - target: Utility
-      - carthage: Cartography
-      - carthage: DIKit
-  Utility:
+        script: |
+          if which dikitgen >/dev/null; then
+            dikitgen ${SRCROOT}/Camera --exclude Carthage > Camera/AppResolver.generated.swift
+          fi
+      - name: Run CopyBundleResources
+        script: |
+          version=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "Camera/Info.plist")
+          /usr/libexec/PlistBuddy -c "Set PreferenceSpecifiers:1:DefaultValue $version" "Camera/Settings.bundle/Root.plist"
+  Environments:
     type: framework
     platform: iOS
-    sources: Utility
+    sources: Environments
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: me.example.camera.utility
-      INFOPLIST_FILE: Utility/info.plist
-    scheme:
-      testTargets:
-        - UtilityTests
-    dependencies:
-      - carthage: XCGLogger
-      - carthage: ObjcExceptionBridging
-  ExCameraTests:
+      PRODUCT_BUNDLE_IDENTIFIER: jp.excamera.environments
+      INFOPLIST_FILE: Environments/Info.plist
+  Logger:
+    type: framework
+    platform: iOS
+    sources:
+      - Logger
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: jp.excamera.logger
+      INFOPLIST_FILE: Logger/Info.plist
+  CameraTests:
     type: bundle.unit-test
     platform: iOS
-    sources: ExCameraTests
+    sources:
+      - CameraTests
     settings:
-      INFOPLIST_FILE: ExCameraTests/info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: jp.excamera.tests
+      INFOPLIST_FILE: CameraTests/Info.plist
       CODE_SIGN_STYLE: Automatic
-      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ExCamera.app/ExCamera
-  UtilityTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources: UtilityTests
-    settings:
-      PRODUCT_BUNDLE_IDENTIFIER: me.example.camera.utility-tests
-      INFOPLIST_FILE: UtilityTests/Info.plist
-      CODE_SIGN_STYLE: Automatic
-      TEST_HOST: $(BUILT_PRODUCTS_DIR)/ExCamera.app/ExCamera
     dependencies:
-      - target: Utility
+      - target: Camera
+      - carthage: Quick
+      - carthage: Nimble

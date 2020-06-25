@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="SJn-Jx-4n8">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Vision View Controller-->
+        <scene sceneID="Zsv-SG-7MN">
+            <objects>
+                <viewController storyboardIdentifier="MLVisionViewController" id="SJn-Jx-4n8" customClass="MLVisionViewController" customModule="ExCamera" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Pv9-SN-6um">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mNU-vd-bau">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="mNU-vd-bau" firstAttribute="leading" secondItem="BAQ-W5-pv3" secondAttribute="leading" id="SjF-QW-JJh"/>
+                            <constraint firstItem="BAQ-W5-pv3" firstAttribute="bottom" secondItem="mNU-vd-bau" secondAttribute="bottom" id="euO-Av-pi0"/>
+                            <constraint firstItem="mNU-vd-bau" firstAttribute="trailing" secondItem="BAQ-W5-pv3" secondAttribute="trailing" id="wb1-D4-ORc"/>
+                            <constraint firstItem="mNU-vd-bau" firstAttribute="top" secondItem="BAQ-W5-pv3" secondAttribute="top" id="xar-1W-MZQ"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="BAQ-W5-pv3"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="tTA-TY-ywk"/>
+                    <connections>
+                        <outlet property="cameraView" destination="mNU-vd-bau" id="LA9-qP-qzn"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Abc-W7-DVG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1994" y="-504"/>
+        </scene>
+    </scenes>
+</document>

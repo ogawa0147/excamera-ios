@@ -1,111 +1,119 @@
-require 'dotenv'
+default_platform :ios
 
-fastlane_version "2.117.1"
-
-before_all do
-  Dotenv.overload '.env'
-end
-
-default_platform(:ios)
+fastlane_require 'dotenv'
 
 platform :ios do
 
   before_all do
+    Dotenv.overload '../.env.secret'
   end
 
   after_all do |lane|
   end
 
   error do |lane, exception|
+    print_error(exception)
   end
 
   # e.g) bundle exec fastlane ios bootstrap
-  desc "Execute commands necessary for development"
+  desc "Setup for development"
   lane :bootstrap do
     setup_project
   end
 
-  # e.g) bundle exec fastlane ios beta
-  desc "Submit a new Beta Build to Fabric"
-  lane :beta do
-    TARGETS = JSON.parse(`xcodebuild -list -json -project ../ExCamera.xcodeproj`)['project']['targets']
-
-    TARGETS.each do |target|
-      backup_file(path: "./#{target}/Info.plist")
-    end
-
-    increment_build_number
-
-    build_app(export_method: "ad-hoc")
-
-    crashlytics(
-      crashlytics_path: "./Pods/Crashlytics/iOS/Crashlytics.framework",
-      api_token: ENV['CRASHLYTICS_API_TOKEN'],
-      build_secret: ENV['CRASHLYTICS_BUILD_SECRET'],
-      notes: "",
-      ipa_path: "./ExCamera.ipa"
-    )
-
-    upload_symbols_to_crashlytics
-
-    clean_build_artifacts
-
-    TARGETS.each do |target|
-      restore_file(path: "./#{target}/Info.plist")
-    end
+  # e.g) bundle exec fastlane ios distribute
+  desc "Submit a new Beta Build to App Distribution"
+  lane :distribute do
+      begin
+        distribution_for_dev_app
+        post_to_slack
+      rescue => error
+        print_error(error)
+        post_to_slack(message: error.message, success: false)
+      end
   end
 
-  # e.g) bundle exec fastlane ios release
-  desc "Deploy a new version to the App Store"
-  lane :release do
-  end
-
-  # e.g) bundle exec fastlane ios test
-  desc "Runs all the tests"
-  lane :test do
-    setup_project
-    opts = {
-      :scheme => 'Development',
-      :workspace => 'ExCamera.xcworkspace',
-      :configuration => 'Debug',
-      :formatter => 'xcpretty-json-formatter',
-      :clean => true
-    }
-    run_tests(opts)
-  end
-
-  # e.g) bundle exec fastlane ios certs
-  desc "Execute certificates issuance"
+  # e.g) bundle exec fastlane ios certificates
+  # bundle exec fastlane match development --force
+  desc "Sync certificates and profiles across team using git"
   lane :certificates do
-    match(app_identifier: "me.example.camera", type: "development", force_for_new_devices: true)
-    match(app_identifier: "me.example.camera", type: "appstore", force_for_new_devices: true)
+    match(app_identifier: 'jp.excamera', type: 'development', readonly: true)
+    match(app_identifier: 'jp.excamera', type: 'appstore', readonly: true)
+  end
+
+  # e.g) bundle exec fastlane ios versions
+  desc "Show current command version"
+  lane :versions do
+    sh 'cd .. && ruby --version'
+    sh 'cd .. && swiftgen --version'
+    sh 'cd .. && xcodegen version'
+    sh 'cd .. && bundle --version'
+    sh 'cd .. && carthage version'
+    sh 'cd .. && pod --version'
+    sh 'cd .. && swiftlint version'
+  end
+
+  # e.g) bundle exec fastlane ios update
+  desc "Update command version"
+  lane :update do
+    sh 'cd .. && ruby --version'
+    sh 'cd .. && swiftgen --version'
+    sh 'cd .. && xcodegen version'
+    sh 'cd .. && bundle --version'
+    sh 'cd .. && carthage version'
+    sh 'cd .. && pod --version'
+    sh 'cd .. && swiftlint version'
+
+    sh 'brew upgrade swiftgen'
+    sh 'brew upgrade xcodegen'
+    sh 'brew upgrade carthage'
+    sh 'brew upgrade swiftlint'
+
+    sh 'cd .. && ruby --version'
+    sh 'cd .. && swiftgen --version'
+    sh 'cd .. && xcodegen version'
+    sh 'cd .. && bundle --version'
+    sh 'cd .. && carthage version'
+    sh 'cd .. && pod --version'
+    sh 'cd .. && swiftlint version'
   end
 
   def setup_project
-    # Mintfile を使った場合、パッケージのリンクを行ってくれないので dikitgen がそのまま使えない
-    # Mintfile で $ mint bootstrap が済んだ場合は実際にもう一回インストールを行わず、リンクだけを行う
-    # project.yml の prebuildScripts でビルドスクリプトを記述している
-    sh 'cd .. && which dikitgen >/dev/null || mint install ishkawa/DIKit dikitgen && dikitgen ExCamera --exclude Carthage > ExCamera/AppResolver.generated.swift'
-
     sh 'cd .. && swiftgen'
     sh 'cd .. && xcodegen'
 
     cocoapods
+
     carthage(
       command: 'build',
-      platform: 'ios',
+      platform: 'iOS',
       cache_builds: true,
       use_binaries: false
     )
   end
 
-  def replace_fabric_api_key_from_info_plist
-    update_info_plist(
-      plist_path: "./ExCamera/Info.plist",
-      block: proc do |plist|
-        plist["Fabric"]["APIKey"] = ENV['CRASHLYTICS_API_TOKEN']
-      end
+  # Submit a new Development Build to App Distribution
+  def distribution_for_dev_app
+    match(app_identifier: 'jp.excamera', type: 'development', readonly: true)
+    gym(scheme: 'Development', export_method: 'development', export_options: { compileBitcode: false })
+    release_notes = changelog_from_git_commits(pretty: '%h %s')
+    firebase_app_distribution(app: ENV['GOOGLE_APP_ID'], groups: ENV['FIREBASE_APP_DISTRIBUTION_GROUP'], release_notes: release_notes)
+    clean_build_artifacts
+  end
+
+  def post_to_slack(message: "", success: true)
+    slack(
+      message: message,
+      channel: ENV['SLACK_CHANNEL'],
+      slack_url: ENV['SLACK_URL'],
+      success: success
     )
+  end
+
+  def print_error(error)
+    print "\e[31m"
+    puts error
+    print "\e[0m"
   end
 
 end

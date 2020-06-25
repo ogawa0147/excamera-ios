@@ -20,27 +20,27 @@ or alternatively using `brew cask install fastlane`
 ```
 fastlane ios bootstrap
 ```
-Execute commands necessary for development
-### ios beta
+Setup for development
+### ios distribute
 ```
-fastlane ios beta
+fastlane ios distribute
 ```
-Submit a new Beta Build to Fabric
-### ios release
-```
-fastlane ios release
-```
-Deploy a new version to the App Store
-### ios test
-```
-fastlane ios test
-```
-Runs all the tests
+Submit a new Beta Build to App Distribution
 ### ios certificates
 ```
 fastlane ios certificates
 ```
-Execute certificates issuance
+Sync certificates and profiles across team using git
+### ios versions
+```
+fastlane ios versions
+```
+Show current command version
+### ios update
+```
+fastlane ios update
+```
+Update command version
 
 ----
 

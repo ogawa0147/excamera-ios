@@ -64,7 +64,7 @@ Carthage/
 
 fastlane/report.xml
 fastlane/Preview.html
-fastlane/screenshots/**/*.png
+fastlane/screenshots
 fastlane/test_output
 
 # Bundle
@@ -74,7 +74,13 @@ fastlane/test_output
 *.xcodeproj/*
 
 # SwiftGen
-ExCamera/Generated/*.swift
+Camera/Generated/*.swift
 
-# DIKitGen
-ExCamera/AppResolver.generated.swift
+# Brewfile.lock.json
+Brewfile.lock.json
+
+# .env
+.env.secret
+
+default.profraw
+Camera/GoogleService-Info.plist

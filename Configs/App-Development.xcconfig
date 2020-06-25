@@ -1,0 +1,10 @@
+#include "Pods/Target Support Files/Pods-Camera/Pods-Camera.debug.xcconfig"
+#include "App-Base.xcconfig"
+
+SWIFT_COMPILATION_MODE = singlefile
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+CODE_SIGN_IDENTITY = Apple Development
+DISPLAY_NAME = Camera
+PRODUCT_BUNDLE_IDENTIFIER = jp.excamera
+PROVISIONING_PROFILE_SPECIFIER = match Development jp.excamera
+CODE_SIGN_ENTITLEMENTS = Camera/Entitlements/Development.entitlements

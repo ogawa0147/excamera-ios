@@ -1,20 +1,29 @@
 included:
-  - ExCamera
-  - ExCameraTests
-  - Utility
-  - UtilityTests
+  - Camera
+  - Environments
+  - Logger
 
 excluded:
   - Carthage
   - Pods
   - .bundle
-  - ExCamera/AppResolver.generated.swift
+  - Camera/AppResolver.generated.swift
+  - CameraTests
 
 disabled_rules:
   - line_length
+  - empty_enum_arguments
+  - force_try
+  - large_tuple
+  - type_body_length
+  - file_length
+  - type_name
 
-variable_name:
+identifier_name:
   excluded:
     - id
+    - ID
     - x
     - y
+    - r
+    - th

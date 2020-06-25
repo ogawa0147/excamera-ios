@@ -1,0 +1,4 @@
+git_url "git@github.com:ogawa0147/certificates-ios.git"
+type "development"
+app_identifier ["jp.excamera"]
+username "m.ogawa0147@gmail.com"

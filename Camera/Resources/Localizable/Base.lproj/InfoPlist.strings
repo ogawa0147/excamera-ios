@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "カメラを使用することの許可を求める";
+"NSMicrophoneUsageDescription" = "カメラを使用することの許可を求める";
+"NSPhotoLibraryUsageDescription" = "写真ライブラリへのアクセスの許可を求める";
