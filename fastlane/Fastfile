@@ -53,31 +53,6 @@ platform :ios do
     sh 'cd .. && swiftlint version'
   end
 
-  # e.g) bundle exec fastlane ios update
-  desc "Update command version"
-  lane :update do
-    sh 'cd .. && ruby --version'
-    sh 'cd .. && swiftgen --version'
-    sh 'cd .. && xcodegen version'
-    sh 'cd .. && bundle --version'
-    sh 'cd .. && carthage version'
-    sh 'cd .. && pod --version'
-    sh 'cd .. && swiftlint version'
-
-    sh 'brew upgrade swiftgen'
-    sh 'brew upgrade xcodegen'
-    sh 'brew upgrade carthage'
-    sh 'brew upgrade swiftlint'
-
-    sh 'cd .. && ruby --version'
-    sh 'cd .. && swiftgen --version'
-    sh 'cd .. && xcodegen version'
-    sh 'cd .. && bundle --version'
-    sh 'cd .. && carthage version'
-    sh 'cd .. && pod --version'
-    sh 'cd .. && swiftlint version'
-  end
-
   def setup_project
     sh 'cd .. && swiftgen'
     sh 'cd .. && xcodegen'

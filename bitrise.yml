@@ -82,7 +82,7 @@ workflows:
     - carthage:
         title: Run Scheduled Cache carthage
         inputs:
-        - carthage_command: build
+        - carthage_command: bootstrap
         - carthage_options: "--platform iOS --cache-builds"
     - cache-push:
         inputs:
@@ -127,49 +127,6 @@ workflows:
         title: Show Versions
         inputs:
         - lane: ios versions
-  _run_update:
-    steps:
-    - script:
-        title: Bootstrap add env rbenv ruby version
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-
-            envman add --key RBENV_RUBY_VERSION_HOME --value "$(rbenv root)""/versions/""$(< .ruby-version)"
-    - cache-pull: {}
-    - script:
-        title: Bootstrap rbenv
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-
-            rubyVersionBinaryPath="$(rbenv root)""/versions/""$(< .ruby-version)""/bin/ruby"
-
-            if [ -e "$rubyVersionBinaryPath" ]; then
-              :
-            else
-              brew update && brew upgrade ruby-build || true
-              rbenv install "$(< .ruby-version)"
-            fi
-    - script:
-        title: Bootstrap bundle
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-
-            bundle install --path .bundle
-            brew bundle
-    - fastlane:
-        title: Update Command Versions
-        inputs:
-        - lane: ios update
-    - cache-push:
-        inputs:
-        - cache_paths: |-
-            ./Cartfile.resolved
-            ./Carthage -> ./Cartfile.resolved
-            .bundle -> ./Gemfile.lock
-            $RBENV_RUBY_VERSION_HOME
   ci:
     after_run:
     - _run_setup
@@ -182,6 +139,3 @@ workflows:
   versions_run:
     after_run:
     - _run_versions
-  update_run:
-    after_run:
-    - _run_update
